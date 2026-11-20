@@ -7,6 +7,10 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
+const loader = new GLTFLoader();
+let mixer;
+let playerMixer;
+
 // ---------------------------------------------------
 // Scene
 // ---------------------------------------------------
@@ -69,6 +73,13 @@ scene.add(dirLight);
 const xBound = 20;
 const zBound = 20;
 
+loader.load('models/tavern2.glb', function(gltf) {
+    const tavern = gltf.scene;
+    tavern.position.set(0, 0, 0);
+    tavern.scale.set(2, 2, 2);
+    scene.add(tavern);
+    objects.push(tavern);
+});
 
 
 // ---------------------------------------------------
@@ -77,9 +88,40 @@ const zBound = 20;
 
 
 // ---------------------------------------------------
-// Character
+// Animal Models
 // ---------------------------------------------------
+let player;
+loader.load('models/deer.glb', function(gltf) {
+    player = gltf.scene;
+    player.position.set(-10, 2, 10);
+    player.scale.set(5, 5, 5);
+    scene.add(player);
+    objects.push(player);
+});
 
+loader.load('models/puma.glb', function(gltf) {
+    const puma = gltf.scene;
+    puma.position.set(-15, 2, 15);
+    puma.scale.set(5, 5, 5);
+    scene.add(puma);
+    objects.push(puma);
+});
+
+loader.load('models/coyote.glb', function(gltf) {
+    const coyote = gltf.scene;
+    coyote.position.set(-15, 2, 15);
+    coyote.scale.set(5, 5, 5);
+    scene.add(coyote);
+    objects.push(coyote);
+});
+
+loader.load('models/bison.glb', function(gltf) {
+    const bison = gltf.scene;
+    bison.position.set(-15, 2, 15);
+    bison.scale.set(0.025, 0.025, 0.025);
+    scene.add(bison);
+    objects.push(bison);
+});
 
 //----------------------------------------------------------------------------
 // Scene

@@ -79,7 +79,6 @@ loader.load('models/tavern2.glb', function(gltf) {
     tavern.position.set(0, 0, 0);
     tavern.scale.set(2, 2, 2);
     scene.add(tavern);
-    //objects.push(tavern);
     finishLoading();
 });
 
@@ -91,7 +90,6 @@ loader.load('models/tavern.glb', function(gltf) {
     backroom.rotation.y = Math.PI * 3 / 2;
     scene.add(backroom);
     backroom.visible = false;
-    //objects.push(tavern);
 });
 
 
@@ -104,12 +102,16 @@ loader.load('models/tavern.glb', function(gltf) {
 // Animal Models
 // ---------------------------------------------------
 let player;
+let king;
+let bartender;
+let patron;
+
 loader.load('models/deer.glb', function(gltf) {
-    player = gltf.scene;
-    player.position.set(-10, 2, 10);
-    player.scale.set(5, 5, 5);
-    scene.add(player);
-    //objects.push(player);
+    deer = gltf.scene;
+    deer.position.set(-10, 2, 10);
+    deer.scale.set(5, 5, 5);
+    scene.add(deer);
+    patron = deer;
 });
 
 loader.load('models/puma.glb', function(gltf) {
@@ -117,7 +119,7 @@ loader.load('models/puma.glb', function(gltf) {
     puma.position.set(-15, 2, 15);
     puma.scale.set(5, 5, 5);
     scene.add(puma);
-    //objects.push(puma);
+    king = puma;
 });
 
 loader.load('models/coyote.glb', function(gltf) {
@@ -125,24 +127,17 @@ loader.load('models/coyote.glb', function(gltf) {
     coyote.position.set(-15, 2, 15);
     coyote.scale.set(5, 5, 5);
     scene.add(coyote);
-    //objects.push(coyote);
+    player = coyote;
 });
 
 loader.load('models/bison.glb', function(gltf) {
     const bison = gltf.scene;
-    bison.position.set(-15, 2, 15);
-    bison.scale.set(0.025, 0.025, 0.025);
+    bison.position.set(8, 0.2, 4);
+    bison.rotation.y = Math.PI * 3 / 2;
+    bison.scale.set(0.035, 0.035, 0.035);
     scene.add(bison);
-    //objects.push(bison);
+    bartender = bison;
 });
-
-//----------------------------------------------------------------------------
-// Scene
-//----------------------------------------------------------------------------
-
-let sceneObjects = [];
-
-
 
 //----------------------------------------------------------------------------
 // Keyboard Event Functions
@@ -151,12 +146,8 @@ let sceneObjects = [];
 //This array will hold the pressed or unpressed state of every key
 var currentlyPressedKeys = [];
 
-//Store current state of shift key
-var shift;
-
 document.onkeydown = function handleKeyDown(event) {
    currentlyPressedKeys[event.keyCode] = true;
-   shift = event.shiftKey;
 
    //Get unshifted key character
    var c = event.keyCode;
@@ -167,7 +158,6 @@ document.onkeydown = function handleKeyDown(event) {
 
 document.onkeyup = function handleKeyUp(event) {
    currentlyPressedKeys[event.keyCode] = false;
-   shift = event.shiftKey;
    
    //Get unshifted key character
    var c = event.keyCode;
@@ -195,96 +185,24 @@ function handleKeys(delta)
    //Place continuous key actions here - anything that should continue while a key is
    //held
 
-   if (!shift && isPressed("W")) 
+   if (isPressed("W")) 
    {
-    //   if(position[2] <= zBound && position[2] >= (-1 * zBound)){
-    //     position[2]-=12 * delta;
-    //     if (position[2] < -zBound){
-    //         position[2] = -zBound;
-    //     }
-    //   }
-    //   updateChar(position, animation);
-    //   //check for collision
-    //   let colliding = false;
-    //   sceneObjects.forEach( obj => {
-    //     if(isColliding(char, obj)) {
-    //         colliding = true;
-    //     }
-    //   })
-    //   if(colliding){
-    //     position[2] += 12 * delta;
-    //   }
-    //   direction = 0;
-    //   walking = true;
    }
 
-   if (!shift && isPressed("A")) 
+   if (isPressed("A")) 
   {
-//        if(position[0] <= xBound && position[0] > (-1 * xBound)){
-//         position[0]-=12 * delta;
-//         if (position[0] < -xBound){
-//             position[0] = -xBound;
-//         }
-//       }
-//       updateChar(position, animation);
-//       //check for collision
-//       let colliding = false;
-//       sceneObjects.forEach( obj => {
-//         if(isColliding(char, obj)) {
-//             colliding = true;
-//         }
-//       })
-//       if(colliding){
-//         position[0] += 12 * delta;
-//       }
-//       direction = 1;
-//       walking = true;
    }
 
-   if (!shift && isPressed("S")) 
+   if (isPressed("S")) 
    {
-    //    if(position[2] < zBound && position[2] >= (-1 * zBound)){
-    //     position[2]+=12 * delta;
-    //     if (position[2] > zBound){
-    //         position[2] = zBound;
-    //     }
-    //   }
-    //   updateChar(position, animation);
-    //    //check for collision
-    //   let colliding = false;
-    //   sceneObjects.forEach( obj => {
-    //     if(isColliding(char, obj)) {
-    //         colliding = true;
-    //     }
-    //   })
-    //   if(colliding){
-    //     position[2] -= 12 * delta;
-    //   }
-    //   direction = 2;
-    //   walking = true;
    }
 
-   if (!shift && isPressed("D")) 
+   if (isPressed("D")) 
    {
-    //     if(position[0] < xBound && position[0] >= (-1 * xBound)){
-    //     position[0]+=12 * delta;
-    //     if (position[0] > xBound){
-    //         position[0] = xBound;
-    //     }
-    //   }
-    //   updateChar(position, animation);
-    //    //check for collision
-    //   let colliding = false;
-    //   sceneObjects.forEach( obj => {
-    //     if(isColliding(char, obj)) {
-    //         colliding = true;
-    //     }
-    //   })
-    //   if(colliding){
-    //     position[0] -= 12 * delta;
-    //   }
-    //   direction = 3;
-    //   walking = true;
+   }
+
+   if (isPressed("E")){
+
    }
 }
 
@@ -321,19 +239,6 @@ function getMousePosition(event){
     mouseX = event.clientX;
     mouseY = event.clientY;
 }
-
-// function isColliding(obj1, obj2){
-//     let obj1Bounds = new THREE.Box3();
-//     obj1Bounds.setFromObject(obj1);
-
-//     let obj2Bounds = new THREE.Box3();
-//     obj2Bounds.setFromObject(obj2);
-
-//     let isColliding = obj1Bounds.intersectsBox(obj2Bounds);
-
-//     return isColliding;
-// }
-
 
 // ---------------------------------------------------
 // Resize

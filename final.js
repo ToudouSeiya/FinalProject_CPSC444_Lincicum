@@ -68,17 +68,30 @@ scene.add(dirLight);
 
 
 // ---------------------------------------------------
-// Floor
+// Setting
 // ---------------------------------------------------
 const xBound = 20;
 const zBound = 20;
 
+let tavern;
 loader.load('models/tavern2.glb', function(gltf) {
-    const tavern = gltf.scene;
+    tavern = gltf.scene;
     tavern.position.set(0, 0, 0);
     tavern.scale.set(2, 2, 2);
     scene.add(tavern);
-    objects.push(tavern);
+    //objects.push(tavern);
+    finishLoading();
+});
+
+let backroom;
+loader.load('models/tavern.glb', function(gltf) {
+    backroom = gltf.scene;
+    backroom.position.set(15, 10, -20);
+    backroom.scale.set(4, 4, 4);
+    backroom.rotation.y = Math.PI * 3 / 2;
+    scene.add(backroom);
+    backroom.visible = false;
+    //objects.push(tavern);
 });
 
 
@@ -96,7 +109,7 @@ loader.load('models/deer.glb', function(gltf) {
     player.position.set(-10, 2, 10);
     player.scale.set(5, 5, 5);
     scene.add(player);
-    objects.push(player);
+    //objects.push(player);
 });
 
 loader.load('models/puma.glb', function(gltf) {
@@ -104,7 +117,7 @@ loader.load('models/puma.glb', function(gltf) {
     puma.position.set(-15, 2, 15);
     puma.scale.set(5, 5, 5);
     scene.add(puma);
-    objects.push(puma);
+    //objects.push(puma);
 });
 
 loader.load('models/coyote.glb', function(gltf) {
@@ -112,7 +125,7 @@ loader.load('models/coyote.glb', function(gltf) {
     coyote.position.set(-15, 2, 15);
     coyote.scale.set(5, 5, 5);
     scene.add(coyote);
-    objects.push(coyote);
+    //objects.push(coyote);
 });
 
 loader.load('models/bison.glb', function(gltf) {
@@ -120,7 +133,7 @@ loader.load('models/bison.glb', function(gltf) {
     bison.position.set(-15, 2, 15);
     bison.scale.set(0.025, 0.025, 0.025);
     scene.add(bison);
-    objects.push(bison);
+    //objects.push(bison);
 });
 
 //----------------------------------------------------------------------------
@@ -340,4 +353,8 @@ window.addEventListener('resize', () => {
     );
 
 });
+}
+
+function finishLoading(){
+    document.getElementById("loadingScreen").style.visibility = "hidden";
 }

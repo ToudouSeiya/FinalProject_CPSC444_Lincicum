@@ -20,6 +20,28 @@
             padding: 10px;
             z-index: 100;
         }
+
+        
+        #loadingScreen {
+            position: absolute;
+            width: 100%;
+            height:100%;
+            color: white;
+            background: rgba(0,0,0,1);
+            padding: 10px;
+            z-index: 101;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            /* justify-content: center; */
+            align-items: center;
+        }
+
+        h1 {
+            margin: auto;
+            display: block;
+            font-size:50px;
+        }
     </style>
 
     <script type="importmap">
@@ -45,6 +67,11 @@
         Move the character using the WASD keys
     </p>
   
+</div>
+
+<div id="loadingScreen">
+    <h1>Final Project - Morgan Lincicum</h1><br>
+    <h1>Loading...</h1>
 </div>
 
 </html>

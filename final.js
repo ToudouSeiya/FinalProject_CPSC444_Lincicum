@@ -10,6 +10,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 const loader = new GLTFLoader();
 let mixers = [];
 let playerMixer;
+let playerIdle;
+let playerWalk;
+let walking = false;
 
 // ---------------------------------------------------
 // Scene
@@ -194,6 +197,8 @@ let king;
 let bartender;
 let patron;
 
+let position;
+
 loader.load('models/deer.glb', function(gltf) {
     const deer = gltf.scene;
     deer.position.set(-19, 0.1, -12);
@@ -253,11 +258,27 @@ loader.load('models/puma.glb', function(gltf) {
 
 loader.load('models/coyote.glb', function(gltf) {
     const coyote = gltf.scene;
-    coyote.position.set(-3, 0.1, 22);
-    coyote.rotation.y = Math.PI;
     coyote.scale.set(5, 5, 5);
-    scene.add(coyote);
-    player = coyote;
+
+    //fix the fact that the coyote was off center by making a separate "root" to control it from, help from AI
+    coyote.updateMatrixWorld(true);
+    const bounds = new THREE.Box3().setFromObject(coyote);
+    const center = bounds.getCenter(new THREE.Vector3());
+    const pivotOffset = new THREE.Vector3(center.x, bounds.min.y, center.z);
+
+    const playerRoot = new THREE.Group();
+    playerRoot.position.set(-3, 0.1, 22);
+    playerRoot.rotation.y = Math.PI;
+
+    // Put the model's feet-center at the root's origin.
+    coyote.position.sub(pivotOffset);
+
+    // Preserve the character's current visible position.
+    playerRoot.position.add(pivotOffset.clone().applyEuler(playerRoot.rotation));
+
+    playerRoot.add(coyote);
+    scene.add(playerRoot);
+    player = playerRoot;
 
     //enable shadows on all objects in group
     gltf.scene.traverse((object) => {
@@ -269,8 +290,11 @@ loader.load('models/coyote.glb', function(gltf) {
 
     //animation
     playerMixer = new THREE.AnimationMixer(gltf.scene);
-    const action = playerMixer.clipAction(gltf.animations[0]);
-    action.play();
+    playerIdle = playerMixer.clipAction(gltf.animations[0]);
+    playerIdle.play();
+    playerWalk = playerMixer.clipAction(gltf.animations[1]);
+
+    position = player.position.clone();
 });
 
 loader.load('models/bison.glb', function(gltf) {
@@ -341,24 +365,34 @@ function handleKeys(delta)
    //Place continuous key actions here - anything that should continue while a key is
    //held
 
-   if (isPressed("W")) 
-   {
+   let x = 0;
+   let z = 0;
+   walking = false;
+
+   if (isPressed("W")) {
+        z -= 10;
    }
 
-   if (isPressed("A")) 
-  {
+   if (isPressed("A")) {
+        x -= 10;
    }
 
    if (isPressed("S")) 
    {
+        z += 10;
    }
 
-   if (isPressed("D")) 
-   {
+   if (isPressed("D")) {
+        x+= 10;
+   }
+
+   if(x != 0 || z != 0){
+        walking = true;
+        walk(x, z, delta);
    }
 
    if (isPressed("E")){
-
+        //interact
    }
 }
 
@@ -366,14 +400,12 @@ function handleKeys(delta)
 // ---------------------------------------------------
 // Animation
 // ---------------------------------------------------
-let position = [0, 2, 0];
-let animation = 0;
 let mouseX = 0;
 let mouseY = 0;
-let walking = false;
 
 
 let previousTime;
+
 function animate(now) {
 
     requestAnimationFrame(animate);
@@ -388,6 +420,12 @@ function animate(now) {
     //update animation mixers
     for (const mixer of mixers) {
         mixer.update(delta);
+    }
+
+    //stop walking animation if not walking
+    if(player && !walking){
+        playerWalk.stop();
+        playerIdle.play();
     }
 
     //update player mixer
@@ -428,4 +466,27 @@ window.addEventListener('resize', () => {
 
 function finishLoading(){
     document.getElementById("loadingScreen").style.visibility = "hidden";
+}
+
+function walk(x, z, delta){
+    if(!position){
+        return;
+    }
+    position.x += x * delta;
+    position.z += z * delta;
+
+    //set rotation
+    if (x !== 0 || z !== 0) {
+        player.rotation.y = -Math.atan2(z, x) + Math.PI / 2;
+    }
+
+    //animate
+    playerIdle.stop();
+    playerWalk.play();
+
+    //check for bounds
+
+    //check for collision
+
+    player.position.copy(position);
 }

@@ -145,8 +145,8 @@ for (const light of [win1Light, win2Light, win3Light, winBLight, fireLight]) {
 // ---------------------------------------------------
 // Setting
 // ---------------------------------------------------
-const xBound = 20;
-const zBound = 20;
+//pos z, neg z, pos x, neg x
+const room1Bounds = [22, -14, 15, -22];
 
 let tavern;
 loader.load('models/tavern2.glb', function(gltf) {
@@ -505,6 +505,18 @@ function walk(x, z, delta){
     playerWalk.play();
 
     //check for bounds
+    if (position.x > room1Bounds[2]) {
+        position.x = room1Bounds[2];
+    }
+    if (position.x < room1Bounds[3]) {
+        position.x = room1Bounds[3];
+    }
+    if (position.z > room1Bounds[0]) {
+        position.z = room1Bounds[0];
+    }
+    if (position.z < room1Bounds[1]) {
+        position.z = room1Bounds[1];
+    }
 
     //check for collision
     if(! playerColliding(x, z, delta)){

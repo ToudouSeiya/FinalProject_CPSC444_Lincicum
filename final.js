@@ -16,7 +16,7 @@ let playerMixer;
 // ---------------------------------------------------
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x99ccff);
+scene.background = new THREE.Color(0x222222);
 
 // ---------------------------------------------------
 // Camera
@@ -56,15 +56,85 @@ const ambientLight = new THREE.AmbientLight(
     0xff9900,
     0.7
 );
-
 scene.add(ambientLight);
 
 const dirLight = new THREE.DirectionalLight(
-    0xFFDD00, 1, Math.PI/6
+    0xffaa00,
+    0.5
 );
-dirLight.position.set(-50, 50, 50);
+dirLight.position.set(0, 20, -20);
+//dirLight.castShadow = true;
 scene.add(dirLight);
 
+//windows
+const win1Light = new THREE.SpotLight(
+    0xffffff,
+    300
+);
+win1Light.position.set(-15, 15, -16);
+win1Light.angle = Math.PI / 6;
+win1Light.penumbra = 0.5;
+win1Light.target.position.set(-15, -5, 0);   
+win1Light.castShadow = true;
+scene.add(win1Light);
+scene.add(win1Light.target);
+
+const win2Light = new THREE.SpotLight(
+    0xffffff,
+    300
+);
+win2Light.position.set(-8, 15, -16);
+win2Light.angle = Math.PI / 6;
+win2Light.penumbra = 0.5;
+win2Light.target.position.set(-8, -5, 0);   
+win2Light.castShadow = true;
+scene.add(win2Light);
+scene.add(win2Light.target);
+
+const win3Light = new THREE.SpotLight(
+    0xffffff,
+    300
+);
+win3Light.position.set(5, 15, -16);
+win3Light.angle = Math.PI / 6;
+win3Light.penumbra = 0.5;
+win3Light.target.position.set(5, -5, 0);   
+win3Light.castShadow = true;
+scene.add(win3Light);
+scene.add(win3Light.target);
+
+//fire light
+const fireLight = new THREE.PointLight(
+    0xff0000,
+    200
+);
+fireLight.position.set(40, 12, -14);
+fireLight.castShadow = true;
+scene.add(fireLight);
+
+//backroom window light
+const winBLight = new THREE.SpotLight(
+    0x9999ff,
+    200
+);
+winBLight.position.set(26, 20, 2);
+winBLight.angle = Math.PI / 6;
+winBLight.penumbra = 0.1;
+winBLight.target.position.set(30, 10, -5);   
+winBLight.castShadow = true;
+scene.add(winBLight);
+scene.add(winBLight.target);
+
+// const helper = new THREE.SpotLightHelper(win1Light, 1);
+// scene.add(helper);
+
+//fix shadow artifacts (help from AI)
+for (const light of [win1Light, win2Light, win3Light, winBLight, fireLight]) {
+    light.shadow.bias = -0.0001;
+    light.shadow.normalBias = 0.02;
+    light.shadow.camera.near = 0.1;
+    light.shadow.camera.far = 50;
+}
 
 
 // ---------------------------------------------------
@@ -79,6 +149,15 @@ loader.load('models/tavern2.glb', function(gltf) {
     tavern.position.set(0, 0, 0);
     tavern.scale.set(2, 2, 2);
     scene.add(tavern);
+
+    //enable shadows on all objects in group
+    gltf.scene.traverse((object) => {
+    if (object.isMesh) {
+        object.castShadow = true;
+        object.receiveShadow = true;
+    }
+    });
+
     finishLoading();
 });
 
@@ -89,6 +168,15 @@ loader.load('models/tavern.glb', function(gltf) {
     backroom.scale.set(4, 4, 4);
     backroom.rotation.y = Math.PI * 2 / 2;
     scene.add(backroom);
+
+    //enable shadows on all objects in group
+    gltf.scene.traverse((object) => {
+        if (object.isMesh) {
+            object.castShadow = true;
+            object.receiveShadow = true;
+        }
+    });
+
     backroom.visible = false;
 });
 
@@ -114,6 +202,14 @@ loader.load('models/deer.glb', function(gltf) {
     scene.add(deer);
     patron = deer;
 
+    //enable shadows on all objects in group
+    gltf.scene.traverse((object) => {
+        if (object.isMesh) {
+            object.castShadow = true;
+            object.receiveShadow = true;
+        }
+    });
+
     //animation
     mixers.push(new THREE.AnimationMixer(gltf.scene));
     const action = mixers[mixers.length - 1].clipAction(gltf.animations[0]);
@@ -126,6 +222,8 @@ loader.load('models/box.glb', function(gltf){
     box.position.set(-16, 1, -10);
     box.rotation.y = Math.PI * 10 / 3;
     scene.add(box);
+    box.castShadow = true;
+    box.receiveShadow = true;
 });
 
 loader.load('models/puma.glb', function(gltf) {
@@ -136,6 +234,14 @@ loader.load('models/puma.glb', function(gltf) {
    
     scene.add(puma);
     king = puma;
+
+    //enable shadows on all objects in group
+    gltf.scene.traverse((object) => {
+        if (object.isMesh) {
+            object.castShadow = true;
+            object.receiveShadow = true;
+        }
+    });
 
     //animation
     mixers.push(new THREE.AnimationMixer(gltf.scene));
@@ -153,6 +259,14 @@ loader.load('models/coyote.glb', function(gltf) {
     scene.add(coyote);
     player = coyote;
 
+    //enable shadows on all objects in group
+    gltf.scene.traverse((object) => {
+        if (object.isMesh) {
+            object.castShadow = true;
+            object.receiveShadow = true;
+        }
+    });
+
     //animation
     playerMixer = new THREE.AnimationMixer(gltf.scene);
     const action = playerMixer.clipAction(gltf.animations[0]);
@@ -166,6 +280,14 @@ loader.load('models/bison.glb', function(gltf) {
     bison.scale.set(0.035, 0.035, 0.035);
     scene.add(bison);
     bartender = bison;
+
+    //enable shadows on all objects in group
+    gltf.scene.traverse((object) => {
+        if (object.isMesh) {
+            object.castShadow = true;
+            object.receiveShadow = true;
+        }
+    });
 
     //animation
     mixers.push(new THREE.AnimationMixer(gltf.scene));

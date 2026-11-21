@@ -14,6 +14,8 @@ let playerIdle;
 let playerWalk;
 let walking = false;
 
+
+const objects = [];
 // ---------------------------------------------------
 // Scene
 // ---------------------------------------------------
@@ -158,6 +160,10 @@ loader.load('models/tavern2.glb', function(gltf) {
     if (object.isMesh) {
         object.castShadow = true;
         object.receiveShadow = true;
+
+        if(object.name !== "Piso_y_pared1_Piso_y_pared_0" && object.name !== "Pilares1_Pilares_escenario_0"){
+            objects.push(object);
+        }
     }
     });
 
@@ -177,6 +183,8 @@ loader.load('models/tavern.glb', function(gltf) {
         if (object.isMesh) {
             object.castShadow = true;
             object.receiveShadow = true;
+
+            objects.push(object);
         }
     });
 
@@ -212,6 +220,8 @@ loader.load('models/deer.glb', function(gltf) {
         if (object.isMesh) {
             object.castShadow = true;
             object.receiveShadow = true;
+
+            objects.push(object);
         }
     });
 
@@ -229,6 +239,8 @@ loader.load('models/box.glb', function(gltf){
     scene.add(box);
     box.castShadow = true;
     box.receiveShadow = true;
+
+    objects.push(box);
 });
 
 loader.load('models/puma.glb', function(gltf) {
@@ -245,6 +257,8 @@ loader.load('models/puma.glb', function(gltf) {
         if (object.isMesh) {
             object.castShadow = true;
             object.receiveShadow = true;
+
+            objects.push(object);
         }
     });
 
@@ -267,7 +281,7 @@ loader.load('models/coyote.glb', function(gltf) {
     const pivotOffset = new THREE.Vector3(center.x, bounds.min.y, center.z);
 
     const playerRoot = new THREE.Group();
-    playerRoot.position.set(-3, 0.1, 22);
+    playerRoot.position.set(-3, 0.2, 22);
     playerRoot.rotation.y = Math.PI;
 
     // Put the model's feet-center at the root's origin.
@@ -310,6 +324,8 @@ loader.load('models/bison.glb', function(gltf) {
         if (object.isMesh) {
             object.castShadow = true;
             object.receiveShadow = true;
+
+            objects.push(object);
         }
     });
 
@@ -360,6 +376,7 @@ function isPressed(c)
 //handleKeys()
 //Continuously called from animate to cause model updates based on
 //any keys currently being held down
+const speed = 5;
 function handleKeys(delta) 
 {
    //Place continuous key actions here - anything that should continue while a key is
@@ -367,23 +384,26 @@ function handleKeys(delta)
 
    let x = 0;
    let z = 0;
+   if (position) {
+    position = player.position.clone(); 
+   }
    walking = false;
 
    if (isPressed("W")) {
-        z -= 10;
+        z -= speed;
    }
 
    if (isPressed("A")) {
-        x -= 10;
+        x -= speed;
    }
 
    if (isPressed("S")) 
    {
-        z += 10;
+        z += speed;
    }
 
    if (isPressed("D")) {
-        x+= 10;
+        x+= speed;
    }
 
    if(x != 0 || z != 0){
@@ -487,6 +507,25 @@ function walk(x, z, delta){
     //check for bounds
 
     //check for collision
+    if(! playerColliding(x, z, delta)){
+        player.position.copy(position);
+    }
+}
 
-    player.position.copy(position);
+function playerColliding(x, z, delta){
+    let colliding = false;
+
+    let playerBox = new THREE.Box3().setFromObject(player);
+    playerBox.translate(new THREE.Vector3(x * delta, 0, z * delta));
+
+    for (const object of objects) {
+        let objectBox = new THREE.Box3().setFromObject(object);
+
+        if (playerBox.intersectsBox(objectBox)) {
+            colliding = true;
+            break;
+        }
+    }
+
+    return colliding;
 }

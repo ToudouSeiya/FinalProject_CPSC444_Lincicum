@@ -8,7 +8,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const loader = new GLTFLoader();
-let mixer;
+let mixers = [];
 let playerMixer;
 
 // ---------------------------------------------------
@@ -85,9 +85,9 @@ loader.load('models/tavern2.glb', function(gltf) {
 let backroom;
 loader.load('models/tavern.glb', function(gltf) {
     backroom = gltf.scene;
-    backroom.position.set(15, 10, -20);
+    backroom.position.set(38.5, 10, -20);
     backroom.scale.set(4, 4, 4);
-    backroom.rotation.y = Math.PI * 3 / 2;
+    backroom.rotation.y = Math.PI * 2 / 2;
     scene.add(backroom);
     backroom.visible = false;
 });
@@ -107,36 +107,70 @@ let bartender;
 let patron;
 
 loader.load('models/deer.glb', function(gltf) {
-    deer = gltf.scene;
-    deer.position.set(-10, 2, 10);
-    deer.scale.set(5, 5, 5);
+    const deer = gltf.scene;
+    deer.position.set(-19, 0.1, -12);
+    deer.rotation.y = Math.PI / 3;
+    deer.scale.set(6, 6, 6);
     scene.add(deer);
     patron = deer;
+
+    //animation
+    mixers.push(new THREE.AnimationMixer(gltf.scene));
+    const action = mixers[mixers.length - 1].clipAction(gltf.animations[0]);
+    action.play();
+});
+
+//the deer's box
+loader.load('models/box.glb', function(gltf){
+    const box = gltf.scene;
+    box.position.set(-16, 1, -10);
+    box.rotation.y = Math.PI * 10 / 3;
+    scene.add(box);
 });
 
 loader.load('models/puma.glb', function(gltf) {
     const puma = gltf.scene;
-    puma.position.set(-15, 2, 15);
     puma.scale.set(5, 5, 5);
+    //puma.rotation.y = Math.PI * 3 / 2; 
+    puma.position.set(40, 8, 3);
+   
     scene.add(puma);
     king = puma;
+
+    //animation
+    mixers.push(new THREE.AnimationMixer(gltf.scene));
+    const action = mixers[mixers.length - 1].clipAction(gltf.animations[3]);
+    action.play();
+
+    puma.visible = false;
 });
 
 loader.load('models/coyote.glb', function(gltf) {
     const coyote = gltf.scene;
-    coyote.position.set(-15, 2, 15);
+    coyote.position.set(-3, 0.1, 22);
+    coyote.rotation.y = Math.PI;
     coyote.scale.set(5, 5, 5);
     scene.add(coyote);
     player = coyote;
+
+    //animation
+    playerMixer = new THREE.AnimationMixer(gltf.scene);
+    const action = playerMixer.clipAction(gltf.animations[0]);
+    action.play();
 });
 
 loader.load('models/bison.glb', function(gltf) {
     const bison = gltf.scene;
     bison.position.set(8, 0.2, 4);
-    bison.rotation.y = Math.PI * 3 / 2;
+    bison.rotation.y = Math.PI * 3 / 2 * 1.23;
     bison.scale.set(0.035, 0.035, 0.035);
     scene.add(bison);
     bartender = bison;
+
+    //animation
+    mixers.push(new THREE.AnimationMixer(gltf.scene));
+    const action = mixers[mixers.length - 1].clipAction(gltf.animations[0]);
+    action.play();
 });
 
 //----------------------------------------------------------------------------
@@ -228,6 +262,16 @@ function animate(now) {
     controls.update(delta);
 
     handleKeys(delta);
+
+    //update animation mixers
+    for (const mixer of mixers) {
+        mixer.update(delta);
+    }
+
+    //update player mixer
+    if (playerMixer) {
+        playerMixer.update(delta);
+    }
 
     renderer.render(scene, camera);
 }

@@ -16,12 +16,25 @@ let walking = false;
 
 
 const objects = [];
+
+const cameraPositions = {
+    'frontTavern' : {
+        'pos' : [-5, 10, 30],
+        'look' : [0, 0, 0]
+    },
+    'backTavern' : {
+        'pos' : [0, 15, 10],
+        'look' : [-5, 0, -7]
+    }
+};
+let currentCam = 'frontTavern';
+
 // ---------------------------------------------------
 // Scene
 // ---------------------------------------------------
 
 const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x222222);
+scene.background = new THREE.Color(0x111111);
 
 // ---------------------------------------------------
 // Camera
@@ -34,7 +47,8 @@ const camera = new THREE.PerspectiveCamera(
     1000
 );
 
-camera.position.set(0, 8, 20);
+changeCameraPosition('frontTavern');
+
 
 // ---------------------------------------------------
 // Renderer
@@ -52,7 +66,7 @@ document.body.appendChild(renderer.domElement);
 // Controls
 // ---------------------------------------------------
 
-const controls = new OrbitControls(camera, renderer.domElement);
+//const controls = new OrbitControls(camera, renderer.domElement);
 
 // ---------------------------------------------------
 // Lights
@@ -349,6 +363,7 @@ document.onkeydown = function handleKeyDown(event) {
    var c = event.keyCode;
    var key = String.fromCharCode(c);
 
+
 	//Place key down detection code here
 }
 
@@ -389,20 +404,20 @@ function handleKeys(delta)
    }
    walking = false;
 
-   if (isPressed("W")) {
+   if (isPressed("W") || isPressed("&")) {
         z -= speed;
    }
 
-   if (isPressed("A")) {
+   if (isPressed("A") || isPressed("%")) {
         x -= speed;
    }
 
-   if (isPressed("S")) 
+   if (isPressed("S") || isPressed("(")) 
    {
         z += speed;
    }
 
-   if (isPressed("D")) {
+   if (isPressed("D") || isPressed("'")) {
         x+= speed;
    }
 
@@ -433,7 +448,7 @@ function animate(now) {
     const delta = previousTime === undefined ? 0 : (now - previousTime) / 1000; 
     previousTime = now;
 
-    controls.update(delta);
+    //controls.update(delta);
 
     handleKeys(delta);
 
@@ -522,6 +537,14 @@ function walk(x, z, delta){
     if(! playerColliding(x, z, delta)){
         player.position.copy(position);
     }
+
+    //check if camera changes
+    if(currentCam == "frontTavern" && player.position.z <= 5){
+        changeCameraPosition("backTavern");
+    }
+    else if(currentCam == "backTavern" && player.position.z > 5){
+        changeCameraPosition("frontTavern");
+    }
 }
 
 function playerColliding(x, z, delta){
@@ -540,4 +563,10 @@ function playerColliding(x, z, delta){
     }
 
     return colliding;
+}
+
+function changeCameraPosition(key) {
+    camera.position.set(cameraPositions[key]['pos'][0], cameraPositions[key]['pos'][1], cameraPositions[key]['pos'][2]);
+    camera.lookAt(new THREE.Vector3(cameraPositions[key]['look'][0], cameraPositions[key]['look'][1], cameraPositions[key]['look'][2]));
+    currentCam = key;
 }
